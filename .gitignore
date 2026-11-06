@@ -1,0 +1,23 @@
+# Script Cache & Runtime
+.cache/
+__pycache__/
+*.pyc
+node_modules/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# OS Files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor & IDE Directories
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
