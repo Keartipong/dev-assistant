@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SKILL_NAME="dev-assistant"
-REPO_URL="https://github.com/<username>/<repo>.git"
+REPO_URL="https://github.com/Keartipong/dev-assistant.git"
 TARGET_DIR="${1:-$HOME/.claude/skills/$SKILL_NAME}"
 
 if ! command -v git >/dev/null 2>&1; then

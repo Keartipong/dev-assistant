@@ -29,13 +29,13 @@ AI Skill มาตรฐาน Agent Skills สำหรับนักพัฒ
 
 ### (ก) ติดตั้งทั้งเครื่อง (Global Installation)
 ```bash
-git clone https://github.com/<username>/<repo>.git ~/.claude/skills/dev-assistant
+git clone https://github.com/Keartipong/dev-assistant.git ~/.claude/skills/dev-assistant
 ```
 
 ### (ข) ติดตั้งเฉพาะโปรเจกต์ (Project-level Installation)
 รันในโฟลเดอร์รากของโปรเจกต์:
 ```bash
-git clone https://github.com/<username>/<repo>.git .claude/skills/dev-assistant
+git clone https://github.com/Keartipong/dev-assistant.git .claude/skills/dev-assistant
 ```
 
 ### (ค) ติดตั้งด้วยสคริปต์อัตโนมัติ

@@ -3,7 +3,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$RepoUrl = "https://github.com/<username>/<repo>.git"
+$RepoUrl = "https://github.com/Keartipong/dev-assistant.git"
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
     Write-Error "Error: ไม่พบคำสั่ง git ในเครื่อง กรุณาติดตั้ง Git ก่อนดำเนินการ"
