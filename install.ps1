@@ -13,6 +13,13 @@ if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
 if (Test-Path (Join-Path $TargetDir ".git")) {
     Write-Host "กำลังอัปเดต dev-assistant ใน $TargetDir ..."
     git -C $TargetDir pull --ff-only
+} elseif (Test-Path $TargetDir) {
+    Write-Host "พบโฟลเดอร์ $TargetDir ที่ไม่มี .git กำลังซิงก์และอัปเดตจาก GitHub ..."
+    git -C $TargetDir init
+    git -C $TargetDir remote remove origin 2>$null
+    git -C $TargetDir remote add origin $RepoUrl
+    git -C $TargetDir fetch origin main
+    git -C $TargetDir checkout -f -B main origin/main
 } else {
     $ParentDir = Split-Path -Parent $TargetDir
     if ($ParentDir -and -not (Test-Path $ParentDir)) {
@@ -22,5 +29,4 @@ if (Test-Path (Join-Path $TargetDir ".git")) {
     git clone $RepoUrl $TargetDir
 }
 
-Write-Host "ติดตั้งสำเร็จที่: $TargetDir"
-
+Write-Host "ติดตั้ง/อัปเดตสำเร็จที่: $TargetDir"

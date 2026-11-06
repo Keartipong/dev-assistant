@@ -42,37 +42,46 @@ git clone https://github.com/Keartipong/dev-assistant.git .agents/skills/dev-ass
 git clone https://github.com/Keartipong/dev-assistant.git .claude/skills/dev-assistant
 ```
 
-### (ค) ติดตั้งด้วยสคริปต์อัตโนมัติ
+### (ค) ติดตั้งหรืออัปเดตด้วยสคริปต์อัตโนมัติ
 - **macOS / Linux (`install.sh`):**
   ```bash
-  # ติดตั้งไปที่ค่าเริ่มต้น (~/.claude/skills/dev-assistant)
-  bash install.sh
+  # ติดตั้งหรืออัปเดตไปที่ .agents/skills/dev-assistant (เฉพาะโปรเจกต์)
+  bash install.sh .agents/skills/dev-assistant
 
-  # หรือระบุพาธปลายทางเอง
-  bash install.sh .claude/skills/dev-assistant
+  # หรือติดตั้งไปที่ค่าเริ่มต้นทั้งเครื่อง (~/.claude/skills/dev-assistant)
+  bash install.sh
   ```
 - **Windows PowerShell (`install.ps1`):**
   ```powershell
-  # ติดตั้งไปที่ค่าเริ่มต้น (~/.claude/skills/dev-assistant)
-  .\install.ps1
+  # ติดตั้งหรืออัปเดตไปที่ .agents\skills\dev-assistant (เฉพาะโปรเจกต์)
+  .\install.ps1 -TargetDir ".agents\skills\dev-assistant"
 
-  # หรือระบุพาธปลายทางเอง
-  .\install.ps1 -TargetDir ".claude\skills\dev-assistant"
+  # หรือติดตั้งไปที่ค่าเริ่มต้นทั้งเครื่อง (~/.claude/skills/dev-assistant)
+  .\install.ps1
   ```
 
-### (ง) อัปเดตเป็นเวอร์ชันล่าสุด
+### (ง) อัปเดตเป็นเวอร์ชันล่าสุด (Update)
 ```bash
+# กรณีติดตั้งไว้ในโปรเจกต์ (.agents/skills/dev-assistant)
+git -C .agents/skills/dev-assistant pull --ff-only
+
+# กรณีติดตั้งไว้ทั้งเครื่อง (~/.claude/skills/dev-assistant)
 git -C ~/.claude/skills/dev-assistant pull --ff-only
+
+# กรณีโฟลเดอร์ไม่มี .git (เช่น คัดลอกไฟล์มาวาง) ให้รันสคริปต์เพื่อดึงอัปเดตทับได้ทันที:
+bash .agents/skills/dev-assistant/install.sh .agents/skills/dev-assistant
+# หรือบน Windows PowerShell:
+.\.agents\skills\dev-assistant\install.ps1 -TargetDir ".agents\skills\dev-assistant"
 ```
 
 ### (จ) ถอนการติดตั้ง
 ลบโฟลเดอร์ที่ติดตั้งออกโดยตรง:
 ```bash
 # macOS / Linux
-rm -rf ~/.claude/skills/dev-assistant
+rm -rf .agents/skills/dev-assistant ~/.claude/skills/dev-assistant
 
 # Windows PowerShell
-Remove-Item -Recurse -Force "$HOME\.claude\skills\dev-assistant"
+Remove-Item -Recurse -Force ".agents\skills\dev-assistant"
 ```
 
 ### (ฉ) สำหรับผู้ใช้ Claude.ai หรือแอปพลิเคชันเดสก์ท็อป
