@@ -11,13 +11,13 @@ const isSummary = args.includes('--summary');
 const noCache = args.includes('--no-cache');
 const rootDir = args.find(a => !a.startsWith('--')) || '.';
 
-const cacheDir = path.join(process.cwd(), '.cache');
+const cacheDir = path.join(__dirname, '..', '.cache');
 const cacheFile = path.join(cacheDir, 'scan_api.json');
 
 function walkApi(dir, depth = 0, list = []) {
   if (!fs.existsSync(dir) || depth > 4) return list;
   for (const entry of fs.readdirSync(dir)) {
-    if (['node_modules', '.git', 'dist', 'build', '.cache', 'tests', 'scripts'].includes(entry)) continue;
+    if (['node_modules', '.git', 'dist', 'build', '.cache', '.agents', 'tests', 'scripts'].includes(entry)) continue;
     const full = path.join(dir, entry);
     if (fs.statSync(full).isDirectory()) walkApi(full, depth + 1, list);
     else if (/\.(js|ts|py|go|php|java)$/.test(entry)) list.push(full.replace(/\\/g, '/'));

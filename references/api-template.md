@@ -1,14 +1,14 @@
-# สารบัญ: [1. กฎเขียนไฟล์ความจำ API](#1-กฎเขียนไฟล์ความจำ-api) | [2. แม่แบบ docs/api-conventions.md](#2-แม่แบบ-docsapi-conventionsmd)
+# สารบัญ: [1. กฎเขียนไฟล์ความจำ API](#1-กฎเขียนไฟล์ความจำ-api) | [2. แม่แบบ .agents/docs/api-conventions.md](#2-แม่แบบ-agentsdocsapi-conventionsmd)
 
 > ยึดกฎกลางใน `SKILL.md#Rules`
 
 ## 1. กฎเขียนไฟล์ความจำ API
-- บันทึกที่ `docs/api-conventions.md` ในโปรเจกต์ผู้ใช้
+- บันทึกที่ `.agents/docs/api-conventions.md` ในโปรเจกต์ผู้ใช้
 - รูปแบบ `key: value` ย่อ ความยาวรวม **ไม่เกิน 60 บรรทัด**
 - อ้างอิง `path` ไฟล์ตัวอย่างแทนการวางโค้ดยาว
 - หากพบหลายสไตล์ปนกัน ให้ใส่ในหมวด `conflicts` สถานะ `ขัดกัน-รอยืนยัน` ห้ามเลือกเอง
 
-## 2. แม่แบบ docs/api-conventions.md
+## 2. แม่แบบ .agents/docs/api-conventions.md
 ```markdown
 # Project API Conventions
 updated_at: YYYY-MM-DD

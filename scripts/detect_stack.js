@@ -9,7 +9,7 @@ const path = require('path');
 const args = process.argv.slice(2);
 const isSummary = args.includes('--summary');
 const noCache = args.includes('--no-cache');
-const cacheDir = path.join(process.cwd(), '.cache');
+const cacheDir = path.join(__dirname, '..', '.cache');
 const cacheFile = path.join(cacheDir, 'detect_stack.json');
 
 const CONFIG_FILES = [

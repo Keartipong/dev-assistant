@@ -11,13 +11,13 @@ const isSummary = args.includes('--summary');
 const noCache = args.includes('--no-cache');
 const rootDir = args.find(a => !a.startsWith('--')) || 'src';
 
-const cacheDir = path.join(process.cwd(), '.cache');
+const cacheDir = path.join(__dirname, '..', '.cache');
 const cacheFile = path.join(cacheDir, 'scan_design.json');
 
 function walkUi(dir, depth = 0, list = []) {
   if (!fs.existsSync(dir) || depth > 4) return list;
   for (const entry of fs.readdirSync(dir)) {
-    if (['node_modules', '.git', 'dist', 'build', '.cache'].includes(entry)) continue;
+    if (['node_modules', '.git', 'dist', 'build', '.cache', '.agents'].includes(entry)) continue;
     const full = path.join(dir, entry);
     if (fs.statSync(full).isDirectory()) walkUi(full, depth + 1, list);
     else if (/\.(vue|tsx|jsx|css|scss|less)$/.test(entry)) list.push(full.replace(/\\/g, '/'));

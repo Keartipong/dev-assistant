@@ -1,7 +1,7 @@
 # dev-assistant
 
 AI Skill มาตรฐาน Agent Skills สำหรับนักพัฒนาซอฟต์แวร์ (Developer) ที่รวมผู้ช่วยตรวจสอบความรอบคอบไว้ 5 โหมดในตัวเดียว
-เน้นแก้โค้ดตรงจุดแบบประหยัด Token ด้วยโหมด `FAST` เป็นค่าเริ่มต้น พร้อมบังคับใช้มาตรฐาน UI (`docs/design-system.md`), มาตรฐาน API (`docs/api-conventions.md`) และตรวจความปลอดภัยขั้นต่ำให้อัตโนมัติ
+เน้นแก้โค้ดตรงจุดแบบประหยัด Token ด้วยโหมด `FAST` เป็นค่าเริ่มต้น พร้อมบังคับใช้มาตรฐาน UI (`.agents/docs/design-system.md`), มาตรฐาน API (`.agents/docs/api-conventions.md`) และตรวจความปลอดภัยขั้นต่ำให้อัตโนมัติ
 
 ---
 
@@ -15,9 +15,9 @@ AI Skill มาตรฐาน Agent Skills สำหรับนักพัฒ
 3. **`TESTER` (`[TESTER]`):**
    รับ Input 3 ส่วน (Requirement, โค้ด, เทสที่มี) เพื่อวิเคราะห์ช่องว่าง 4 มิติ ได้แก่ (1) Req ที่ยังไม่มีเทส (2) โค้ดที่เทสไม่ถึง (branch/error path) (3) Edge case ที่ขาด (4) จุดที่ Req กับโค้ดไม่ตรงกัน รวมถึงช่วยเขียนเอกสารจากโค้ดและตรวจเอกสารเทียบโค้ด
 4. **`DESIGN` (`[DESIGN-SCAN]`, `[DESIGN-UPDATE]` และทำงานอัตโนมัติเมื่อแตะ UI):**
-   สแกนและจำรูปแบบ UI ของโปรเจกต์ไว้ใน `docs/design-system.md` บังคับให้ทุกงานที่แตะ UI ทำตามรูปแบบเดิมเสมอ (ยกเว้นสั่งว่า *"เป็น design ใหม่"*)
+   สแกนและจำรูปแบบ UI ของโปรเจกต์ไว้ใน `.agents/docs/design-system.md` บังคับให้ทุกงานที่แตะ UI ทำตามรูปแบบเดิมเสมอ (ยกเว้นสั่งว่า *"เป็น design ใหม่"*)
 5. **`API` (`[API-SCAN]`, `[API-UPDATE]` และทำงานอัตโนมัติเมื่อแตะ API ทั้ง BE/FE):**
-   สแกนและจำมาตรฐาน API ทั้งฝั่ง Backend และ Frontend ไว้ใน `docs/api-conventions.md` บังคับใช้โครงสร้างเดิมเสมอ หากเรื่องใดยังไม่มีของเดิมจะออกแบบตามหลักประสิทธิภาพสูงสุดใน `references/api-rules.md`
+   สแกนและจำมาตรฐาน API ทั้งฝั่ง Backend และ Frontend ไว้ใน `.agents/docs/api-conventions.md` บังคับใช้โครงสร้างเดิมเสมอ หากเรื่องใดยังไม่มีของเดิมจะออกแบบตามหลักประสิทธิภาพสูงสุดใน `references/api-rules.md`
 
 ---
 
@@ -35,6 +35,10 @@ git clone https://github.com/Keartipong/dev-assistant.git ~/.claude/skills/dev-a
 ### (ข) ติดตั้งเฉพาะโปรเจกต์ (Project-level Installation)
 รันในโฟลเดอร์รากของโปรเจกต์:
 ```bash
+# สำหรับ Antigravity / Agent Skills (.agents)
+git clone https://github.com/Keartipong/dev-assistant.git .agents/skills/dev-assistant
+
+# หรือสำหรับ Claude Code (.claude)
 git clone https://github.com/Keartipong/dev-assistant.git .claude/skills/dev-assistant
 ```
 
@@ -97,16 +101,16 @@ Remove-Item -Recurse -Force "$HOME\.claude\skills\dev-assistant"
 | `[SENIOR DEV]` | เขียนโค้ดตาม convention เดิม หาสาเหตุบัก และรีวิวช่องโหว่ความปลอดภัย | `[SENIOR DEV] รีวิวความปลอดภัยและหาสาเหตุบัก memory leak ในไฟล์ src/workers/syncWorker.ts` |
 | `[TESTER]` | เทียบ Requirement-Code-Test 4 มิติ หรือเขียน/ตรวจเอกสารเทียบโค้ด | `[TESTER] เทียบ Requirement ด้านล่างกับโค้ด src/auth/login.ts และเทส tests/login.spec.ts ว่าขาดเคสไหนบ้าง` |
 | `[BOTH]` | รัน `SENIOR DEV` แล้วให้ `TESTER` ตรวจซ้ำต่อเนื่องในคำตอบเดียว | `[BOTH] เขียนฟังก์ชันโอนแต้มสะสมใน src/services/point.ts และตรวจเทียบกับ Requirement ที่แนบมา` |
-| `[DESIGN-SCAN]` | สแกนโปรเจกต์ครั้งแรกเพื่อสร้างไฟล์ความจำ `docs/design-system.md` | `[DESIGN-SCAN] สแกนรูปแบบ UI ของโปรเจกต์นี้แล้วสร้างไฟล์ docs/design-system.md` |
-| `[DESIGN-UPDATE]` | อัปเดต `docs/design-system.md` แบบเพิ่ม/แก้ โดยไม่ลบของเดิมเอง | `[DESIGN-UPDATE] สแกนการเปลี่ยนแปลง UI ล่าสุดแล้วอัปเดต docs/design-system.md` |
-| `[API-SCAN]` | สแกนโปรเจกต์ครั้งแรกเพื่อสร้างไฟล์ความจำ `docs/api-conventions.md` | `[API-SCAN] สแกนมาตรฐาน API ทั้งฝั่ง BE และ FE แล้วสร้างไฟล์ docs/api-conventions.md` |
-| `[API-UPDATE]` | อัปเดต `docs/api-conventions.md` แบบเพิ่ม/แก้ โดยถามยืนยันจุดที่ขัดกัน | `[API-UPDATE] อัปเดตมาตรฐาน API ใน docs/api-conventions.md จากโมดูลชำระเงินที่เพิ่งเพิ่มใหม่` |
+| `[DESIGN-SCAN]` | สแกนโปรเจกต์ครั้งแรกเพื่อสร้างไฟล์ความจำ `.agents/docs/design-system.md` | `[DESIGN-SCAN] สแกนรูปแบบ UI ของโปรเจกต์นี้แล้วสร้างไฟล์ .agents/docs/design-system.md` |
+| `[DESIGN-UPDATE]` | อัปเดต `.agents/docs/design-system.md` แบบเพิ่ม/แก้ โดยไม่ลบของเดิมเอง | `[DESIGN-UPDATE] สแกนการเปลี่ยนแปลง UI ล่าสุดแล้วอัปเดต .agents/docs/design-system.md` |
+| `[API-SCAN]` | สแกนโปรเจกต์ครั้งแรกเพื่อสร้างไฟล์ความจำ `.agents/docs/api-conventions.md` | `[API-SCAN] สแกนมาตรฐาน API ทั้งฝั่ง BE และ FE แล้วสร้างไฟล์ .agents/docs/api-conventions.md` |
+| `[API-UPDATE]` | อัปเดต `.agents/docs/api-conventions.md` แบบเพิ่ม/แก้ โดยถามยืนยันจุดที่ขัดกัน | `[API-UPDATE] อัปเดตมาตรฐาน API ใน .agents/docs/api-conventions.md จากโมดูลชำระเงินที่เพิ่งเพิ่มใหม่` |
 
 ---
 
-## วิธีทำงานของ `docs/design-system.md` และ `docs/api-conventions.md`
+## วิธีทำงานของ `.agents/docs/design-system.md` และ `.agents/docs/api-conventions.md`
 
-- **ตำแหน่งจัดเก็บ:** ไฟล์ทั้งสองถูกสร้างและเก็บไว้ในโฟลเดอร์ `docs/` **ภายในโปรเจกต์ของผู้ใช้** (ไม่ได้อยู่ใน repo ของ Skill นี้) เพื่อให้แต่ละโปรเจกต์มีไฟล์ความจำเฉพาะของตัวเอง
+- **ตำแหน่งจัดเก็บ:** ไฟล์ทั้งสองถูกสร้างและเก็บไว้ในโฟลเดอร์ `.agents/docs/` **ภายในโปรเจกต์ของผู้ใช้** (ไม่ได้อยู่ใน repo ของ Skill นี้) และไฟล์แคชของสคริปต์จะถูกเก็บไว้ใน `.agents/skills/dev-assistant/.cache/` เพื่อให้ทุกอย่างรวมอยู่ใน `.agents/` ที่เดียว ไม่รกโฟลเดอร์รากของโปรเจกต์
 - **การสร้างและอัปเดต:**
   - สั่ง `[DESIGN-SCAN]` หรือ `[API-SCAN]` ในครั้งแรกเพื่อให้สคริปต์ (`scripts/scan_design.js` / `scripts/scan_api.js`) ดึงข้อมูลโครงสร้างจริงและสุ่มอ่านไฟล์ตัวแทน 3-5 ไฟล์ แล้วสรุปเป็นรูปแบบ `key: value` กระชับ (ไม่เกิน 60 บรรทัด)
   - สั่ง `[DESIGN-UPDATE]` หรือ `[API-UPDATE]` เมื่อโปรเจกต์มีการขยับขยาย โดย Skill จะอัปเดตแบบ **"เพิ่ม/แก้"** เท่านั้น ห้ามลบของเดิมเอง และหากพบหลายสไตล์ปนกันจะขึ้นสถานะ `ขัดกัน-รอยืนยัน` เพื่อให้ผู้ใช้ตัดสินใจ

@@ -29,7 +29,7 @@ try {
     hunksPreview: diffHunks
   };
 
-  const cacheDir = path.join(process.cwd(), '.cache');
+  const cacheDir = path.join(__dirname, '..', '.cache');
   if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
   fs.writeFileSync(path.join(cacheDir, 'git_diff_extract.json'), JSON.stringify(result), 'utf8');
 

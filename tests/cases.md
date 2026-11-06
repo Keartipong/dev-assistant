@@ -6,7 +6,7 @@
 
 ## ข้อมูลเตรียมทดสอบ: ไฟล์ความจำจำลองในโปรเจกต์ (`docs/`)
 
-### 1. ไฟล์จำลอง `docs/design-system.md` (`key: value` ย่อ)
+### 1. ไฟล์จำลอง `.agents/docs/design-system.md` (`key: value` ย่อ)
 ```markdown
 # Project Design System
 updated_at: 2026-11-06
@@ -48,7 +48,7 @@ pages_views: kebab-case.vue ใน src/views/
 components: PascalCase.vue ใน src/components/
 ```
 
-### 2. ไฟล์จำลอง `docs/api-conventions.md` (`key: value` ย่อ)
+### 2. ไฟล์จำลอง `.agents/docs/api-conventions.md` (`key: value` ย่อ)
 ```markdown
 # Project API Conventions
 updated_at: 2026-11-06
@@ -158,8 +158,8 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 
 ---
 
-### เคส FAST-5 [มีกับดัก]: สั่งแก้ใน `FAST` แต่ชื่อ Key ที่สั่งขัดกับ `docs/api-conventions.md`
-- **สิ่งที่ทดสอบ:** กฎข้อ 5 ของ `FAST` — ตรวจ convention แบบเงียบเสมอ และแจ้งเตือนเมื่อสิ่งที่แก้เบี่ยงจาก `docs/api-conventions.md`
+### เคส FAST-5 [มีกับดัก]: สั่งแก้ใน `FAST` แต่ชื่อ Key ที่สั่งขัดกับ `.agents/docs/api-conventions.md`
+- **สิ่งที่ทดสอบ:** กฎข้อ 5 ของ `FAST` — ตรวจ convention แบบเงียบเสมอ และแจ้งเตือนเมื่อสิ่งที่แก้เบี่ยงจาก `.agents/docs/api-conventions.md`
 - **Prompt ทดสอบ:**
   ```text
   ในไฟล์ src/api/orders.ts ด้านล่าง ช่วยเปลี่ยน payload ในฟังก์ชัน cancelOrder ให้ส่ง key ชื่อ orderId และ cancelReason แบบ camelCase:
@@ -175,33 +175,33 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
   ```
 - **ผลลัพธ์ที่คาดหวัง (Expected Output):**
   1. แก้โค้ดตามสั่งเป็น `{ orderId: id, cancelReason: reason }` พร้อมแสดง `diff`
-  2. **แจ้งเตือนสั้นๆ 1 บรรทัด** ว่าการใช้ `camelCase` (`orderId`, `cancelReason`) เบี่ยงจากมาตรฐานใน `docs/api-conventions.md` ที่กำหนดให้ใช้ `snake_case`
+  2. **แจ้งเตือนสั้นๆ 1 บรรทัด** ว่าการใช้ `camelCase` (`orderId`, `cancelReason`) เบี่ยงจากมาตรฐานใน `.agents/docs/api-conventions.md` ที่กำหนดให้ใช้ `snake_case`
 
 ---
 
 ## หมวดที่ 2: เคสโหมด `DESIGN` (3 เคส)
 
-### เคส DESIGN-1 [ระดับง่าย]: เพิ่มหน้าใหม่ตาม `docs/design-system.md` เดิม
-- **สิ่งที่ทดสอบ:** เมื่อสร้างหน้า UI ใหม่ ต้องอ่าน `docs/design-system.md` และใช้ component/class/naming ตรงตามมาตรฐานเดิมทั้งหมด
+### เคส DESIGN-1 [ระดับง่าย]: เพิ่มหน้าใหม่ตาม `.agents/docs/design-system.md` เดิม
+- **สิ่งที่ทดสอบ:** เมื่อสร้างหน้า UI ใหม่ ต้องอ่าน `.agents/docs/design-system.md` และใช้ component/class/naming ตรงตามมาตรฐานเดิมทั้งหมด
 - **Prompt ทดสอบ:**
   ```text
   สร้างหน้าแสดงรายการคลังสินค้า src/views/warehouses/warehouse-list.vue ที่มีหัวข้อหน้า ปุ่มเพิ่มคลังสินค้ามุมขวา และตารางแสดงข้อมูล
   ```
 - **ผลลัพธ์ที่คาดหวัง (Expected Output):**
-  1. โหลด `docs/design-system.md` (ไม่โหลด `docs/api-conventions.md` หากไม่แตะ API)
+  1. โหลด `.agents/docs/design-system.md` (ไม่โหลด `.agents/docs/api-conventions.md` หากไม่แตะ API)
   2. ใช้ชื่อไฟล์ `kebab-case.vue`, ใช้ container `p-6 bg-white rounded-lg shadow-sm`, หัวข้อ `text-xl font-bold text-slate-900`, ปุ่ม `<BaseButton variant="primary">`, ตาราง `<DataTable :rows="..." :loading="isLoading" :pagination="pageMeta" />`, และแจ้ง error ด้วย `toast.error()`
 
 ---
 
 ### เคส DESIGN-2 [ระดับปานกลาง]: สั่งสร้าง UI โดยระบุว่า *"เป็น design ใหม่"*
-- **สิ่งที่ทดสอบ:** ข้ามกฎเดิมใน `docs/design-system.md` ได้เมื่อผู้ใช้ระบุ *"เป็น design ใหม่"* และหลังทำเสร็จต้องถาม 1 คำถามว่าจะบันทึกเป็นมาตรฐานเพิ่มไหม
+- **สิ่งที่ทดสอบ:** ข้ามกฎเดิมใน `.agents/docs/design-system.md` ได้เมื่อผู้ใช้ระบุ *"เป็น design ใหม่"* และหลังทำเสร็จต้องถาม 1 คำถามว่าจะบันทึกเป็นมาตรฐานเพิ่มไหม
 - **Prompt ทดสอบ:**
   ```text
   สร้างคอมโพเนนต์แบนเนอร์โปรโมชัน src/components/promo/FlashSaleBanner.vue โดยอันนี้เป็น design ใหม่ ให้ใช้พื้นหลังสีดำ bg-zinc-950 ตัวหนังสือสีเหลืองนีออน text-yellow-400 text-3xl และปุ่มขอบมนเต็มทรง rounded-full
   ```
 - **ผลลัพธ์ที่คาดหวัง (Expected Output):**
   1. สร้างคอมโพเนนต์ตามสไตล์ใหม่ที่สั่ง (`bg-zinc-950`, `text-yellow-400`, `text-3xl`, `rounded-full`) โดยไม่บังคับกลับไปใช้สี `#1D4ED8` เดิม
-  2. **ถามท้ายคำตอบ 1 คำถาม:** ว่าต้องการบันทึกรูปแบบ design ใหม่นี้เข้า `docs/design-system.md` เป็นมาตรฐานเพิ่มเติมหรือไม่
+  2. **ถามท้ายคำตอบ 1 คำถาม:** ว่าต้องการบันทึกรูปแบบ design ใหม่นี้เข้า `.agents/docs/design-system.md` เป็นมาตรฐานเพิ่มเติมหรือไม่
 
 ---
 
@@ -209,7 +209,7 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 - **สิ่งที่ทดสอบ:** เมื่อพบ 2 สไตล์ขัดกันในโปรเจกต์ ห้ามเลือกเองมั่ว ต้องแสดงรายการขัดกัน (`ขัดกัน-รอยืนยัน`) และถามผู้ใช้ 1 คำถาม
 - **Prompt ทดสอบ:**
   ```text
-  [DESIGN-SCAN] ช่วยสแกนและสรุปมาตรฐาน UI จาก 2 หน้าตัวแทนของโปรเจกต์ด้านล่างนี้เพื่อเตรียมเขียน docs/design-system.md:
+  [DESIGN-SCAN] ช่วยสแกนและสรุปมาตรฐาน UI จาก 2 หน้าตัวแทนของโปรเจกต์ด้านล่างนี้เพื่อเตรียมเขียน .agents/docs/design-system.md:
   - ไฟล์ที่ 1 (src/views/orders/order-list.vue): ใช้ <BaseButton variant="primary"> สีน้ำเงิน bg-blue-700, ตาราง <DataTable>, แจ้งเตือนด้วย toast.error()
   - ไฟล์ที่ 2 (src/views/shipments/shipment-list.vue): ใช้ <button class="bg-emerald-600 rounded-full"> ดิบ, ตาราง <table> ดิบ, แจ้งเตือนด้วย window.alert()
   ```
@@ -222,20 +222,20 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 
 ## หมวดที่ 3: เคสโหมด `API` (4 เคส)
 
-### เคส API-1 [ระดับง่าย]: เพิ่ม Endpoint ใหม่ฝั่ง Backend ตาม `docs/api-conventions.md`
+### เคส API-1 [ระดับง่าย]: เพิ่ม Endpoint ใหม่ฝั่ง Backend ตาม `.agents/docs/api-conventions.md`
 - **สิ่งที่ทดสอบ:** สร้าง Endpoint ใหม่ฝั่ง BE โดยใช้ชื่อ key (`snake_case`), โครงสร้าง response (`{ status: "success", data, meta }`), URL (`/api/v1/kebab-case-plural`), และโครงสร้าง layer ตรงตามของเดิม
 - **Prompt ทดสอบ:**
   ```text
   เพิ่ม Endpoint ฝั่ง Backend สำหรับดึงรายการใบแจ้งหนี้ (Invoices) พร้อมรองรับ Pagination
   ```
 - **ผลลัพธ์ที่คาดหวัง (Expected Output):**
-  1. โหลด `docs/api-conventions.md`
+  1. โหลด `.agents/docs/api-conventions.md`
   2. ใช้ URL `/api/v1/invoices`, แยกชั้น `routes -> controllers -> services -> repositories`, รับ query `page` และ `per_page`, ใช้ `requireAuth` middleware
   3. คืนค่า `{ status: "success", data, meta }` และใช้ชื่อฟิลด์ `snake_case` ทั้งหมด (เช่น `invoice_id`, `total_amount`, `created_at`)
 
 ---
 
-### เคส API-2 [ระดับง่าย]: เพิ่มฟังก์ชันเรียก API ฝั่ง Frontend ตาม `docs/api-conventions.md`
+### เคส API-2 [ระดับง่าย]: เพิ่มฟังก์ชันเรียก API ฝั่ง Frontend ตาม `.agents/docs/api-conventions.md`
 - **สิ่งที่ทดสอบ:** เพิ่มฟังก์ชันฝั่ง FE โดยเรียกผ่าน `httpClient` กลางใน `src/api/[domain].ts` และส่ง/รับ key แบบ `snake_case` ตามของเดิม
 - **Prompt ทดสอบ:**
   ```text
@@ -257,7 +257,7 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
   1. โหลด `references/api-rules.md`
   2. **ฝั่ง BE:** บังคับเพดานจำนวนผลลัพธ์ (`maxLimit`), เลือกส่งเฉพาะฟิลด์ที่จำเป็น (ไม่ `SELECT *`), ทำ validation ที่ขอบระบบ, แนะนำการใส่ index ที่คอลัมน์ค้นหา
   3. **ฝั่ง FE:** เรียกผ่าน `httpClient` กลาง, ทำ **debounce** การพิมพ์ค้นหา, ใช้ **`AbortController`** ยกเลิก request เก่าเมื่อพิมพ์คำใหม่, มีการทำ cache/dedupe และจัดการ `loading / error / empty state` ครบ
-  4. **ถามท้ายคำตอบ 1 คำถาม:** ว่าต้องการบันทึกรูปแบบ Search API นี้เข้า `docs/api-conventions.md` เป็นมาตรฐานของโปรเจกต์หรือไม่
+  4. **ถามท้ายคำตอบ 1 คำถาม:** ว่าต้องการบันทึกรูปแบบ Search API นี้เข้า `.agents/docs/api-conventions.md` เป็นมาตรฐานของโปรเจกต์หรือไม่
 
 ---
 
@@ -265,7 +265,7 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 - **สิ่งที่ทดสอบ:** เมื่อสแกนพบชื่อ key ปนกันทั้ง `camelCase` และ `snake_case` ห้ามเลือกเอง ต้องแจ้งว่าขัดกัน (`ขัดกัน-รอยืนยัน`) และถาม 1 คำถาม
 - **Prompt ทดสอบ:**
   ```text
-  [API-SCAN] ช่วยสแกนโค้ด API 2 ไฟล์ด้านล่างเพื่อสรุปมาตรฐานชื่อ key ลง docs/api-conventions.md:
+  [API-SCAN] ช่วยสแกนโค้ด API 2 ไฟล์ด้านล่างเพื่อสรุปมาตรฐานชื่อ key ลง .agents/docs/api-conventions.md:
 
   // ไฟล์ที่ 1: src/api/customers.ts
   export const createCustomer = (data: any) => httpClient.post('/api/v1/customers', {
@@ -333,7 +333,7 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 ## หมวดที่ 5: เคสโหมด `SENIOR DEV` (ระดับปานกลาง)
 
 ### เคส SENIOR-1 [ระดับปานกลาง]: เขียนฟีเจอร์เล็กๆ ตาม Convention เดิม + รีวิวช่องโหว่ความปลอดภัยโดยไม่แก้นอกขอบเขต
-- **สิ่งที่ทดสอบ:** เขียนโค้ดตาม `docs/api-conventions.md` เดิม ไม่แก้ฟังก์ชันนอกขอบเขตที่ห้ามแตะ และตรวจจับช่องโหว่ในไฟล์ด้วยตาราง Security
+- **สิ่งที่ทดสอบ:** เขียนโค้ดตาม `.agents/docs/api-conventions.md` เดิม ไม่แก้ฟังก์ชันนอกขอบเขตที่ห้ามแตะ และตรวจจับช่องโหว่ในไฟล์ด้วยตาราง Security
 - **Prompt ทดสอบ:**
   ```text
   [SENIOR DEV] ในไฟล์ src/api/refunds.ts ด้านล่าง ให้เพิ่มเฉพาะฟังก์ชัน requestRefund(orderId, refundAmount) สำหรับยิง POST ขอคืนเงิน (ห้ามแก้ฟังก์ชัน getRefundStatus เดิมเด็ดขาด) พร้อมรีวิวความปลอดภัยของไฟล์นี้:
@@ -349,7 +349,7 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
   };
   ```
 - **ผลลัพธ์ที่คาดหวัง (Expected Output):**
-  1. รัน `scan_secrets.js` และโหลด `references/security-checklist.md` + `docs/api-conventions.md`
+  1. รัน `scan_secrets.js` และโหลด `references/security-checklist.md` + `.agents/docs/api-conventions.md`
   2. **ไม่แก้ฟังก์ชัน `getRefundStatus` เดิมตามที่สั่ง** แต่รายงานในตาราง Security (`Critical > High > Medium > Low`) ว่าพบ `Critical: Hardcoded JWT Secret (INTERNAL_SERVICE_TOKEN)` ที่บรรทัด 4 และ `High: Sensitive Token Logged to Console` ที่บรรทัด 7
-  3. เพิ่มเฉพาะฟังก์ชัน `requestRefund` โดยเรียกผ่าน `httpClient.post('/api/v1/refund-requests', { order_id: orderId, refund_amount: refundAmount })` ซึ่งใช้ URL `/api/v1/kebab-case-plural` และส่ง key แบบ `snake_case` ตรงตาม `docs/api-conventions.md`
+  3. เพิ่มเฉพาะฟังก์ชัน `requestRefund` โดยเรียกผ่าน `httpClient.post('/api/v1/refund-requests', { order_id: orderId, refund_amount: refundAmount })` ซึ่งใช้ URL `/api/v1/kebab-case-plural` และส่ง key แบบ `snake_case` ตรงตาม `.agents/docs/api-conventions.md`
 

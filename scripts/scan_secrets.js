@@ -12,7 +12,7 @@ const noCache = rawArgs.includes('--no-cache');
 const targets = rawArgs.filter(a => !a.startsWith('--'));
 const scanPaths = targets.length ? targets : ['src', 'backend', 'api', 'app'];
 
-const cacheDir = path.join(process.cwd(), '.cache');
+const cacheDir = path.join(__dirname, '..', '.cache');
 const cacheFile = path.join(cacheDir, 'scan_secrets.json');
 
 const RULES = [
@@ -28,7 +28,7 @@ function walk(dir, list = []) {
   const st = fs.statSync(dir);
   if (st.isFile()) return [dir];
   for (const item of fs.readdirSync(dir)) {
-    if (['node_modules', '.git', 'dist', 'build', '.cache', 'tests'].includes(item)) continue;
+    if (['node_modules', '.git', 'dist', 'build', '.cache', '.agents', 'tests'].includes(item)) continue;
     const full = path.join(dir, item);
     if (fs.statSync(full).isDirectory()) walk(full, list);
     else if (/\.(js|ts|jsx|tsx|vue|py|go|php|java|env)$/.test(item)) list.push(full.replace(/\\/g, '/'));

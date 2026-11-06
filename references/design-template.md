@@ -1,14 +1,14 @@
-# สารบัญ: [1. กฎเขียนไฟล์ความจำ UI](#1-กฎเขียนไฟล์ความจำ-ui) | [2. แม่แบบ docs/design-system.md](#2-แม่แบบ-docsdesign-systemmd)
+# สารบัญ: [1. กฎเขียนไฟล์ความจำ UI](#1-กฎเขียนไฟล์ความจำ-ui) | [2. แม่แบบ .agents/docs/design-system.md](#2-แม่แบบ-agentsdocsdesign-systemmd)
 
 > ยึดกฎกลางใน `SKILL.md#Rules`
 
 ## 1. กฎเขียนไฟล์ความจำ UI
-- บันทึกที่ `docs/design-system.md` ในโปรเจกต์ผู้ใช้
+- บันทึกที่ `.agents/docs/design-system.md` ในโปรเจกต์ผู้ใช้
 - รูปแบบ `key: value` ย่อ ความยาวรวม **ไม่เกิน 60 บรรทัด**
 - อ้างอิง `path` ไฟล์ตัวอย่างแทนการวางโค้ดยาว
 - หากพบหลายสไตล์ปนกัน ให้ใส่ในหมวด `conflicts` สถานะ `ขัดกัน-รอยืนยัน` ห้ามเลือกเอง
 
-## 2. แม่แบบ docs/design-system.md
+## 2. แม่แบบ .agents/docs/design-system.md
 ```markdown
 # Project Design System
 updated_at: YYYY-MM-DD

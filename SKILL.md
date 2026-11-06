@@ -13,19 +13,19 @@ description: ผู้ช่วย Developer 5 โหมดในตัวเด
 | แท็ก / บริบทงาน | สคริปต์ (`--summary`) | `references/` ที่โหลด | ไฟล์ความจำโปรเจกต์ที่โหลด |
 | :--- | :--- | :--- | :--- |
 | **ทุกโหมด (ครั้งแรกเซสชัน)** | `node scripts/detect_stack.js --summary` | - | - |
-| **`FAST` (ค่าเริ่มต้น)** | - | `api-rules.md` (เฉพาะเมื่อแตะ API ที่ไร้ของเดิม) | แตะ UI -> `docs/design-system.md` / แตะ API -> `docs/api-conventions.md` |
+| **`FAST` (ค่าเริ่มต้น)** | - | `api-rules.md` (เฉพาะเมื่อแตะ API ที่ไร้ของเดิม) | แตะ UI -> `.agents/docs/design-system.md` / แตะ API -> `.agents/docs/api-conventions.md` |
 | **`[DEEP]` / `[SENIOR DEV]`** | `git_diff_extract.js`, `scan_secrets.js` | `modes.md`, `security-checklist.md` | โหลดเฉพาะเมื่อแตะ UI หรือ API |
 | **`[TESTER]`** | - | `modes.md`, `test-checklist.md` หรือ `doc-template.md` | - |
 | **`[DEEP+TEST]` / `[BOTH]`** | `git_diff_extract.js`, `scan_secrets.js` | `modes.md`, `security-checklist.md`, `test-checklist.md` | โหลดเฉพาะเมื่อแตะ UI หรือ API |
-| **`[DESIGN-SCAN]` / `UPDATE`** | `node scripts/scan_design.js --summary` | `modes.md`, `design-template.md` | `docs/design-system.md` (ไม่โหลดไฟล์ API) |
-| **`[API-SCAN]` / `UPDATE`** | `node scripts/scan_api.js --summary` | `modes.md`, `api-template.md`, `api-rules.md` | `docs/api-conventions.md` (ไม่โหลดไฟล์ UI) |
+| **`[DESIGN-SCAN]` / `UPDATE`** | `node scripts/scan_design.js --summary` | `modes.md`, `design-template.md` | `.agents/docs/design-system.md` (ไม่โหลดไฟล์ API) |
+| **`[API-SCAN]` / `UPDATE`** | `node scripts/scan_api.js --summary` | `modes.md`, `api-template.md`, `api-rules.md` | `.agents/docs/api-conventions.md` (ไม่โหลดไฟล์ UI) |
 
 ## Workflow (FAST ค่าเริ่มต้น)
 1. **ตรวจ Stack (แคชต่อเซสชัน):** รัน `node scripts/detect_stack.js --summary` หากได้ `UNKNOWN_STACK` ถาม 1 คำถามแล้วหยุด
 2. **อ่านเฉพาะจุด:** ใช้ search ชี้จุดก่อนอ่าน อ่านเฉพาะไฟล์/ฟังก์ชันที่แก้โดยตรง ห้ามอ่านทั้งไฟล์ถ้าไม่จำเป็น
 3. **กฎอัตโนมัติ UI & API (ตรวจเงียบทุกโหมดรวม FAST แจ้งเฉพาะเมื่อเบี่ยง):**
-   - **แตะ UI:** อ่าน `docs/design-system.md` (ไม่มี -> แจ้งและเสนอ `[DESIGN-SCAN]`) ทำตามเดิม ยกเว้นสั่ง *"เป็น design ใหม่"* ข้ามได้แล้วถามท้ายคำตอบ 1 คำถามว่าจะบันทึกเพิ่มไหม
-   - **แตะ API:** อ่าน `docs/api-conventions.md` (ไม่มี -> แจ้งและเสนอ `[API-SCAN]`) ทำตามเดิม ยกเว้นสั่ง *"เป็นแบบใหม่"* ถ้าไร้ของเดิม โหลด `references/api-rules.md` ออกแบบตามหลักประสิทธิภาพแล้วถาม 1 คำถามว่าจะบันทึกไหม
+   - **แตะ UI:** อ่าน `.agents/docs/design-system.md` (ไม่มี -> แจ้งและเสนอ `[DESIGN-SCAN]`) ทำตามเดิม ยกเว้นสั่ง *"เป็น design ใหม่"* ข้ามได้แล้วถามท้ายคำตอบ 1 คำถามว่าจะบันทึกเพิ่มไหม
+   - **แตะ API:** อ่าน `.agents/docs/api-conventions.md` (ไม่มี -> แจ้งและเสนอ `[API-SCAN]`) ทำตามเดิม ยกเว้นสั่ง *"เป็นแบบใหม่"* ถ้าไร้ของเดิม โหลด `references/api-rules.md` ออกแบบตามหลักประสิทธิภาพแล้วถาม 1 คำถามว่าจะบันทึกไหม
 4. **ตรวจความปลอดภัยขั้นต่ำเสมอ:** ห้ามฝัง secrets, ห้ามต่อ string เป็น query, ห้ามข้าม auth/validation เดิม (ถ้าคำสั่งผู้ใช้ทำให้เกิดช่องโหว่ ให้ทำตามสั่งแล้วเตือนสั้นๆ 1 บรรทัด ห้ามเงียบ)
 5. **ขอบเขต & เทส:** แก้เฉพาะที่สั่ง ห้ามเพิ่มฟีเจอร์/refactor เอง เห็นปัญหานอกขอบเขตแจ้ง 1 บรรทัดท้ายคำตอบ ห้ามแก้เอง ไม่เขียน/รันเทสเพิ่มเว้นแต่สั่ง (ถ้าเทสเดิมพังให้แจ้ง)
 6. **โหมดอื่น:** โหลด `references/modes.md` และไฟล์ตามตาราง เมื่องาน `[DEEP]`/`[DEEP+TEST]` จบ กลับสู่ `FAST` อัตโนมัติ
