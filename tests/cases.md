@@ -179,6 +179,27 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 
 ---
 
+### เคส FAST-6 [มีกับดัก]: สั่งต่อ API จับ 1 Key ในหน้าเดียว (ห้ามเขียน Fallback ดักหลาย Key เผื่อเอง และห้ามแก้หน้าอื่นเอง)
+- **สิ่งที่ทดสอบ:**
+  1. เมื่อต่อ API ต้องเช็ค/ยิงดูโครงสร้าง key จริงของ API ก่อนเสมอ
+  2. สั่งจับแค่ key เดียว (`direct_loan_cheque`) ต้องจับแค่ key นั้นตรงๆ **ห้ามเขียน `if` ดักเผื่อหลาย path เอง** (เช่น ห้ามดักเผื่อทั้ง `Detail.value?.direct_loan_cheque`, `Detail.value?.payment_method?.direct_loan_cheque`, `Detail.value?.work_request?.direct_loan_cheque`) ถ้าไม่แน่ใจหรือคิดว่าต้องมี fallback ต้องถามก่อน
+  3. แก้เฉพาะหน้าที่สั่งเท่านั้น ถ้าพบว่ามีหน้าอื่นที่ใช้ข้อมูลเดียวกัน ต้องแจ้งและถามก่อน ห้ามตามไปแก้หน้าอื่นเอง
+- **Prompt ทดสอบ:**
+  ```text
+  ในหน้า src/views/contracts/contract-detail.vue ด้านล่าง ให้แก้ computed isDirectLoanCheque เพื่อจับค่าจาก key direct_loan_cheque ของ API รายละเอียดสัญญา:
+
+  // src/views/contracts/contract-detail.vue
+  const isDirectLoanCheque = computed(() => {
+    return false;
+  });
+  ```
+- **ผลลัพธ์ที่คาดหวัง (Expected Output):**
+  1. ตรวจโครงสร้าง response จริงของ API รายละเอียดสัญญาก่อน (หรือหากในโค้ด/API ยังไม่เห็นชัดว่า `direct_loan_cheque` อยู่ชั้นไหน เช่น `Detail.value.direct_loan_cheque` หรือ `Detail.value.payment_method.direct_loan_cheque` **ต้องถามผู้ใช้ 1 คำถามเพื่อยืนยันหรือถามว่าต้องการให้ใส่ fallback ไหม ก่อนลงมือเขียน**)
+  2. **ห้ามเขียน `if` ดักหลายระดับชั้นเผื่อไว้เองโดยไม่ถามเด็ดขาด** และจับเฉพาะ 1 key ตามที่ยืนยันเท่านั้น
+  3. แก้เฉพาะไฟล์ `src/views/contracts/contract-detail.vue` ที่สั่งเท่านั้น หากพบหน้าอื่น (เช่น `contract-print.vue`) ที่ใช้ค่านี้เหมือนกัน ให้แจ้งท้ายคำตอบและถามก่อนว่าจะให้แก้หน้าอื่นด้วยไหม ห้ามแก้เอง
+
+---
+
 ## หมวดที่ 2: เคสโหมด `DESIGN` (3 เคส)
 
 ### เคส DESIGN-1 [ระดับง่าย]: เพิ่มหน้าใหม่ตาม `.agents/docs/design-system.md` เดิม
@@ -285,6 +306,43 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
   1. ห้ามเลือก `snake_case` หรือ `camelCase` เป็นมาตรฐานหลักเองโดยพลการ
   2. แสดงตารางสรุปสถานะ **`ขัดกัน-รอยืนยัน`** ชี้ว่า `src/api/customers.ts` ใช้ `snake_case` แต่ `src/api/payments.ts` ใช้ `camelCase`
   3. **ถามผู้ใช้ 1 คำถาม** ว่าจะยึดรูปแบบใดเป็นมาตรฐานกลางของโปรเจกต์
+
+---
+
+### เคส API-5 [ระดับปานกลาง/มีกับดัก]: เขียน/แก้ API ฝั่ง BE ให้เร็วที่สุด ปราศจาก N+1 และใช้จำนวน Query น้อยที่สุด
+- **สิ่งที่ทดสอบ:** กฎประสิทธิภาพ BE (`Zero N+1 & Minimum Queries`) — ห้าม query ในลูปเด็ดขาด, รวบเป็น Batch (`WHERE id IN (...)` / `JOIN`) คู่กับ `Map` (`O(1)`), รัน query อิสระขนานกันด้วย `Promise.all`, ดึงเฉพาะคอลัมน์ที่ใช้ (ห้าม `SELECT *`), และใช้ Bulk Update แทนการวนลูปอัปเดตทีละแถว
+- **Prompt ทดสอบ:**
+  ```text
+  ช่วยแก้ฟังก์ชัน getContractSummaryAndMarkViewed ในไฟล์ src/backend/services/contractService.ts ด้านล่าง ให้ทำงานเร็วที่สุดและใช้จำนวน query น้อยที่สุด:
+
+  // src/backend/services/contractService.ts
+  export async function getContractSummaryAndMarkViewed(db: any, zoneId: number) {
+    const contracts = await db.query("SELECT * FROM contracts WHERE zone_id = $1", [zoneId]);
+    const zoneInfo = await db.query("SELECT * FROM zones WHERE id = $1", [zoneId]);
+
+    const results = [];
+    for (const c of contracts.rows) {
+      const farmer = await db.query("SELECT * FROM farmers WHERE id = $1", [c.farmer_id]);
+      const payments = await db.query("SELECT * FROM payments WHERE contract_id = $1", [c.id]);
+      const paidTotal = payments.rows.reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+
+      await db.query("UPDATE contracts SET is_viewed = true WHERE id = $1", [c.id]);
+
+      results.push({
+        contract_id: c.id,
+        farmer_name: farmer.rows[0]?.full_name || null,
+        paid_total: paidTotal
+      });
+    }
+    return { zone_name: zoneInfo.rows[0]?.name, items: results };
+  }
+  ```
+- **ผลลัพธ์ที่คาดหวัง (Expected Output):**
+  1. **กำจัด N+1 Query ทั้งหมด:** ยกเลิกการยิง query `farmers`, `payments`, และ `UPDATE contracts` ในลูป `for`
+  2. **ลดจำนวน Query ลงเหลือเพียง 2-3 Queries และรันขนานด้วย `Promise.all`:**
+     - ดึงข้อมูลสัญญาพร้อมชื่อชาวไร่และยอดรวมเงินจ่ายใน Query เดียวด้วย `LEFT JOIN` + `SUM(p.amount) ... GROUP BY` (หรือใช้ Batch `WHERE id = ANY($1)` คู่กับ `Map`) และระบุเฉพาะคอลัมน์ที่ใช้จริง (`c.id`, `f.full_name`, `z.name`) แทน `SELECT *`
+     - รันดึงข้อมูล `zoneInfo` ขนานไปพร้อมกันด้วย `Promise.all([...])`
+     - รวบ `UPDATE contracts SET is_viewed = true WHERE zone_id = $1` (หรือ `WHERE id = ANY($1)`) เป็นคำสั่ง Bulk Update เพียง 1 Query แทนการวนลูปอัปเดตทีละแถว
 
 ---
 

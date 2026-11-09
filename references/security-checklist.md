@@ -12,11 +12,11 @@
 - **Sensitive Data Exposure:** พิมพ์ token, รหัสผ่าน, ข้อมูลส่วนบุคคล (PII/เลขบัญชี/บัตรประชาชน) ลง log หรือส่งออกใน error response
 - **Missing Boundary Validation:** ไม่ตรวจ type, ขนาด, ขอบเขตค่า (เช่น ยอดติดลบ, array ใหญ่เกินเพดาน) หรือชนิดไฟล์อัปโหลดที่ขอบระบบ
 - **Race Condition / Double Submit:** งานตัดเงิน/อนุมัติ/สร้างรายการสำคัญไม่มี lock, transaction, หรือ idempotency key ป้องกันกดซ้ำ
+- **N+1 Query & Unbounded DB Load:** มีการยิง query/API ในลูป (N+1), ยิง `await` query ที่อิสระต่อกันแบบเรียงลำดับแทน `Promise.all`, วนลูป `INSERT/UPDATE` ทีละแถวแทน Bulk, หรือดึงข้อมูลไร้เพดาน (`SELECT *` / ไม่มี `LIMIT`)
 - **CSRF / Insecure CORS:** เปิด `Access-Control-Allow-Origin: *` ร่วมกับ credentials หรือไร้การป้องกัน CSRF ใน cookie auth
 
 ## 3. Medium & Low
 - **Unhandled Error / Silent Catch:** `async/await` ไร้ `try/catch`, กลืน error เงียบ (`catch {}`), หรือโยน raw stack trace ออก API
 - **Resource & Memory Leak:** เปิด connection, stream, timer (`setInterval`), event listener แล้วไม่ปิดเมื่อจบงาน/unmount
-- **Unbounded Query / N+1:** ดึงข้อมูลไร้เพดาน (`limit`), ยิง query ในลูป (N+1), หรือไม่ตั้ง timeout ของการเรียก API ภายนอก
 - **Hardcoded Config:** ฝัง URL, port, timeout หรือค่าเฉพาะสภาพแวดล้อมไว้ในโค้ดแทนการอ่านจาก config/env
 
