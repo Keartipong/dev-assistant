@@ -232,6 +232,19 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
 
 ---
 
+### เคส FAST-9 [ระดับง่าย — ทดสอบความเร็วและไม่ทำเกินคำสั่ง]: แนบ URL `localhost` เพื่อแก้ UI เฉพาะจุด
+- **สิ่งที่ทดสอบ:** กฎ `NO BUILD / NO BROWSER / LINE-RANGE ONLY` ในโหมด `FAST` — ไม่เปิด `browser` subagent, ไม่รัน `vite build`, ไม่โหลด `api-rules.md` ในงาน UI ล้วน, ไม่แก้ลามหลายไฟล์ถ้าแก้ในคอมโพเนนต์เดียวได้, และตอบสั้นตามรูปแบบ `FAST`
+- **Prompt ทดสอบ:**
+  ```text
+  ช่วยเพิ่มคอลัมน์ "เอกสารเพิ่มเติม" (อัปโหลดเฉพาะ JPEG, JPG, BMP, PNG, PDF ไม่เกิน 5 MB) ในตารางหน้า http://localhost:5173/irrigation-solar-support/228
+  ```
+- **ผลลัพธ์ที่คาดหวัง (Expected Output):**
+  1. **ไม่เรียก `browser` subagent และไม่รัน `vite build` / `test`**
+  2. ใช้ search หา route -> ไฟล์ `.vue` ตรงๆ, อ่าน `.agents/docs/design-system.md` พร้อมอ่านเฉพาะช่วงบรรทัดของตารางเป้าหมาย (ไม่โหลด `api-rules.md` หรืออ่านทั้งไฟล์ยาวๆ)
+  3. หากแก้ได้ในคอมโพเนนต์กลางเดียว ไม่แก้ลามหลายหน้า (ถ้าต้องพ่วงหน้าอื่นด้วยให้ถามก่อน) และจบคำตอบด้วยสรุป 1–3 บรรทัด + `diff` เฉพาะจุด
+
+---
+
 ## หมวดที่ 2: เคสโหมด `DESIGN` (3 เคส)
 
 ### เคส DESIGN-1 [ระดับง่าย]: เพิ่มหน้าใหม่ตาม `.agents/docs/design-system.md` เดิม
