@@ -20,8 +20,8 @@
 - **ขั้นตอน:**
   1. ยึด convention เดิมของโปรเจกต์ก่อนเสมอ (`.agents/docs/design-system.md`, `.agents/docs/api-conventions.md`)
   2. อ่านไฟล์เป้าหมาย + ไฟล์ที่เรียกใช้ (caller) และถูกเรียกใช้ (callee)
-  3. รัน `node scripts/git_diff_extract.js --summary` และ `node scripts/scan_secrets.js --summary`
-  4. โหลด `references/security-checklist.md` ตรวจช่องโหว่ (injection, secrets หลุด, auth ผิดพลาด) และ edge case
+  3. รัน `node scripts/git_diff_extract.js --summary`, `node scripts/scan_secrets.js --summary` และ `node scripts/check_guard.js --summary`
+  4. โหลด `references/security-checklist.md` (และ `references/api-rules.md` ถ้าแตะ API) ตรวจช่องโหว่ (injection, secrets หลุด, auth ผิดพลาด, fallback เผื่อเอง, N+1) และ edge case
   5. รายงานตามตารางใน `SKILL.md#Output` (`≤ 15 รายการ`, รายการละ `≤ 1 บรรทัด`)
 
 ## 3. TESTER & BOTH
@@ -54,8 +54,8 @@
 - **ไฟล์ความจำ:** `.agents/docs/api-conventions.md` (ในโปรเจกต์ผู้ใช้, `key: value` ย่อ `≤ 60 บรรทัด`)
 - **กฎบังคับใช้ (รวมใน FAST เมื่อแตะ API BE/FE):**
   - อ่าน `.agents/docs/api-conventions.md` ก่อนเสมอ (ไม่มีไฟล์ -> แจ้งและเสนอ `[API-SCAN]`)
-  - **เมื่อต่อ API ฝั่ง FE ต้องเช็ค/ยิงดูโครงสร้าง key จริงของ endpoint นั้นก่อนเสมอ สั่งจับ 1 key ให้จับแค่ 1 key ตรงๆ ห้ามเขียนดักหลาย key/path เผื่อไว้เอง (ถ้าต้องมี fallback หรือมีหน้าอื่นที่ต้องแก้ตาม ให้ถามก่อนทุกครั้ง)**
-  - **เมื่อเขียน/แก้ API ฝั่ง BE ต้องบังคับใช้กฎ Zero N+1 & Minimum Queries ใน `references/api-rules.md#2` เสมอ (ห้าม query ในลูป, ใช้ Batch `IN`/`JOIN`, รันขนานด้วย `Promise.all`, ใช้ Bulk Insert/Update, ห้าม `SELECT *`)**
+  - **เมื่อต่อ API ฝั่ง FE ต้องเช็ค/ยิงดูโครงสร้าง key จริงของ endpoint นั้นก่อนเสมอ (ไม่เห็นจริงห้ามเดา ให้หยุดถาม) สั่งจับ 1 key ให้จับแค่ 1 key ตรงๆ ห้ามใช้ `??`/`||`/`?:`/`if` หลายชั้นหรือ `catch` คืนค่า default เผื่อไว้เอง (ถ้าต้องมี fallback หรือมีหน้าอื่นต้องแก้ตาม ให้ถามก่อนทุกครั้ง)**
+  - **เมื่อเขียน/แก้ API ฝั่ง BE ต้องบังคับใช้กฎ Zero N+1 & Minimum Queries ใน `references/api-rules.md#2` และรัน `node scripts/check_guard.js --summary <file>` ก่อนตอบเสมอ**
   - มีรูปแบบเดิม -> ทำตามเดิม ยกเว้นระบุ *"เป็นแบบใหม่"*
   - ไม่มีรูปแบบเดิมในหัวข้อนั้น -> โหลด `references/api-rules.md` ออกแบบตามหลักประสิทธิภาพ แล้วถาม 1 คำถามว่าจะบันทึกไหม
   - หลังเขียน เทียบ `.agents/docs/api-conventions.md` รายงานเฉพาะจุดที่เบี่ยง

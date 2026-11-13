@@ -131,7 +131,7 @@ Remove-Item -Recurse -Force ".agents\skills\dev-assistant"
 
 1. **Architecture แบบ Router (`SKILL.md` ≤ 60 บรรทัด):** `SKILL.md` ทำหน้าที่เป็นตารางนำทาง (Selective Loading Router) เท่านั้น ไม่โหลดรายละเอียดโหมดอื่นเข้า Context จนกว่าจะถูกเรียกใช้
 2. **Selective Reference Loading:** แยกกฎและแม่แบบไว้ใน `references/` (แต่ละไฟล์ ≤ 80 บรรทัด มีสารบัญบรรทัดแรก เขียนแบบ Telegraphic) และโหลดเฉพาะไฟล์ที่งานนั้นต้องใช้จริง
-3. **Scripts First & Session Caching:** ใช้สคริปต์ใน `scripts/` ตรวจ Stack, สแกน Secrets, ดึง `git diff`, และสแกนโครงสร้าง UI/API แทนการให้ AI อ่านไฟล์ทั้งโปรเจกต์ พร้อมแคชผลลง `.cache/` และพิมพ์ผลลัพธ์แบบย่อ (`--summary`)
+3. **Scripts First & Session Caching:** ใช้สคริปต์ใน `scripts/` (`detect_stack.js`, `scan_secrets.js`, `git_diff_extract.js`, `scan_design.js`, `scan_api.js`, `check_guard.js`) ตรวจ Stack, สแกน Secrets, ดึง `git diff`, สแกนโครงสร้าง UI/API และบล็อก Fallback/N+1 Query อัตโนมัติ แทนการให้ AI อ่านไฟล์ทั้งโปรเจกต์ พร้อมแคชผลลง `.cache/` และพิมพ์ผลลัพธ์แบบย่อ (`--summary`)
 4. **Targeted Read & Diff-Only Output:** ค้นหาพิกัดก่อนอ่านเฉพาะฟังก์ชันที่เกี่ยวข้อง และตอบกลับเฉพาะข้อความสรุปสั้นๆ พร้อม `diff` เฉพาะจุดที่แก้ ไม่ลอกโค้ดทั้งไฟล์ซ้ำ
 
 ---

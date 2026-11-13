@@ -1,36 +1,32 @@
-# สารบัญ: [1. กฎเหล็กต่อ API & จับ Key](#1-กฎเหล็กต่อ-api--จับ-key) | [2. กฎประสิทธิภาพ BE (Zero N+1 & Min Queries)](#2-กฎประสิทธิภาพ-be-zero-n1--min-queries) | [3. รายการตรวจของเดิม BE/FE](#3-รายการตรวจของเดิม-befe) | [4. หลักออกแบบใหม่เมื่อไม่มีของเดิม](#4-หลักออกแบบใหม่เมื่อไม่มีของเดิม)
+# สารบัญ: [1. กฎเหล็ก ZERO FALLBACK & จับ Key](#1-กฎเหล็ก-zero-fallback--จับ-key) | [2. กฎประสิทธิภาพ BE (Zero N+1 & Min Queries)](#2-กฎประสิทธิภาพ-be-zero-n1--min-queries) | [3. รายการตรวจของเดิม BE/FE](#3-รายการตรวจของเดิม-befe) | [4. หลักออกแบบใหม่เมื่อไม่มีของเดิม](#4-หลักออกแบบใหม่เมื่อไม่มีของเดิม)
 
 > ยึดกฎกลางใน `SKILL.md#Rules`
 
-## 1. กฎเหล็กต่อ API & จับ Key
-- **ต้องเช็ค Key จริงของ API นั้นก่อนเสมอ:** เมื่อต่อ API ต้องยิงเช็ค response จริง หรือตรวจจากโค้ด BE/DTO/Schema ของ endpoint นั้นให้เห็นโครงสร้าง key จริงก่อนเขียนโค้ด ห้ามเดาโครงสร้างก้อนข้อมูลเอง
-- **ห้ามดักหลาย Key เผื่อไว้เอง (Zero Speculative Fallback):** สั่งจับ key ไหน ให้เขียนจับแค่ path ของ key นั้นตัวเดียวตรงๆ (เช่น `Detail.value?.direct_loan_cheque`) **ห้ามเขียน `if` หรือ `||` / `??` ดักเผื่อหลายชั้นเองเด็ดขาด**
-- **ถ้าต้องมี Fallback ต้องถามก่อนทุกครั้ง:** หากตรวจไม่พบโครงสร้าง API จริง หรือพบว่าข้อมูลจริงมีโอกาสอยู่ได้หลาย path จนต้องทำ fallback **ต้องหยุดและถามผู้ใช้ก่อนทุกครั้ง ห้ามเขียน fallback เองโดยพลการ**
-- **แก้เฉพาะหน้าที่ระบุเท่านั้น:** หากเห็นว่าหน้าอื่นใช้ API เดียวกันหรือต้องแก้ตาม ห้ามตามไปแก้หน้าอื่นเอง ต้องแจ้งและถามผู้ใช้ก่อนเสมอ
+## 1. กฎเหล็ก ZERO FALLBACK & จับ Key
+1. **พิสูจน์ Key จริงก่อนเสมอ:** ก่อนเขียนโค้ดต่อ API (FE/BE) ต้องยิงเช็ค response จริง หรืออ่านโค้ด BE Controller/DTO/Schema ของ endpoint นั้นให้เห็น 1 path แน่นอน **ถ้าไม่เห็นโครงสร้างจริง ห้ามเดา ห้ามเขียนโค้ด ให้หยุดถามผู้ใช้ก่อนทันที**
+2. **ห้าม Fallback ทุกรูปแบบโดยไม่ถาม (ZERO FALLBACK):**
+   - **ห้ามเด็ดขาด (BANNED):**
+     - ดักหลาย path ด้วย `if`: `if (Detail.value?.x !== undefined) ...; if (Detail.value?.sub?.x !== undefined) ...;`
+     - ดักด้วย `??` / `||` / `?:`: `res?.data?.items ?? res?.items ?? []`, `Detail.value?.k || Detail.value?.sub?.k`, `val ?? ''`
+     - ซ่อน error/ค่าขาดด้วย `catch`: `try { ... } catch { return [] }` หรือรับ query หลายชื่อ (`req.query.limit ?? req.query.per_page`)
+   - **ที่ถูกต้อง (REQUIRED):** จับเฉพาะ 1 path ที่พิสูจน์แล้วตรงๆ (เช่น `return !!Detail.value?.direct_loan_cheque`) **หากเห็นว่าจำเป็นต้องมี fallback** (เช่น ข้อมูลเก่าไม่มี nested key, ค่าอาจเป็น null, หรือมีของเก่าดักหลาย path อยู่) **ห้ามเขียน fallback ลงไฟล์ก่อน — ให้หยุดถามผู้ใช้ 1 คำถามพร้อมระบุเหตุผลและ path สำรอง รอผู้ใช้ตอบตกลงจึงค่อยเขียน**
+3. **แก้เฉพาะหน้าที่ระบุเท่านั้น:** เห็นหน้าอื่นใช้ API เดียวกัน/ต้องแก้ตาม ให้แจ้งและถามก่อน ห้ามตามไปแก้เอง
+4. **ตรวจซ้ำด้วยสคริปต์:** รัน `node scripts/check_guard.js --summary <ไฟล์ที่แก้>` ก่อนตอบ หากขึ้น `BLOCKED` โดยผู้ใช้ยังไม่อนุญาต fallback นั้น ต้องลบทิ้งออกจากไฟล์ทันทีแล้วค่อยถามผู้ใช้ (ห้ามปล่อย fallback ค้างไว้ในโค้ด)
 
 ## 2. กฎประสิทธิภาพ BE (Zero N+1 & Min Queries — บังคับใช้ทุกครั้งที่เขียน/แก้ BE)
-1. **ห้ามเกิด N+1 Query เด็ดขาด:** ห้ามวาง DB query หรือ HTTP call ไว้ในลูป (`for`, `for..of`, `map`, `forEach`) ต้องรวบ ID ไปดึงครั้งเดียวด้วย `WHERE id IN (...)`, `JOIN`, หรือ Eager Load (`include`/`preload`) แล้วแปลงเป็น `Map`/`Set` เพื่อจับคู่ในหน่วยความจำด้วย `O(1)`
-2. **ลดจำนวน Query (Round-trip) ให้เหลือน้อยที่สุด:**
-   - รวบตารางที่เกี่ยวข้องด้วย `JOIN` หรือ `CTE` ใน query เดียวเมื่อเหมาะสม
-   - หากมีหลาย query ที่ไม่พึ่งพาผลลัพธ์กัน (เช่น ดึง `rows` คู่กับ `count` หรือดึงข้อมูลคนละตาราง) ต้องรันขนานกันด้วย `Promise.all([...])` ห้าม `await` เรียงต่อกันทีละบรรทัด
-   - การเพิ่ม/แก้ไขหลายรายการ ต้องใช้ **Bulk Insert / Bulk Update** คำสั่งเดียว ห้ามวนลูป `INSERT`/`UPDATE` ทีละแถว
-3. **ผลักงานคำนวณไปที่ DB และดึงเฉพาะฟิลด์ที่ใช้:**
-   - ใช้ `SUM`, `COUNT`, `GROUP BY`, `EXISTS` (ใช้ `EXISTS` แทน `COUNT(*) > 0`) ใน DB ห้ามดึงทุกแถวมา `.filter()` / `.reduce()` ในโค้ด
-   - ระบุคอลัมน์ที่ใช้จริงเสมอ (`SELECT id, name`) ห้าม `SELECT *`
-4. **เขียน Query ให้ใช้ Index ได้เต็มประสิทธิภาพ (SARGable):**
-   - ห้ามครอบฟังก์ชันบนคอลัมน์ใน `WHERE` (เช่น ใช้ `created_at >= start AND created_at < end` แทน `DATE(created_at) = ...`) และบังคับเพดาน `LIMIT` เสมอ
+1. **Zero N+1 Query:** ห้ามวาง DB query/HTTP call ในลูป (`for`/`while`/`forEach`/`map`) ต้องรวบ ID ด้วย `WHERE id IN (...)`, `JOIN`, หรือ Eager Load แล้วจับคู่ผ่าน `Map` (`O(1)`)
+2. **ลด Round-trip ให้เหลือน้อยที่สุด:**
+   - รวบตารางด้วย `JOIN` / `CTE` ใน query เดียวเมื่อเหมาะสม
+   - รัน query ที่ไม่พึ่งพากันแบบขนานด้วย `Promise.all([...])` ห้าม `await` เรียงต่อกัน
+   - ใช้ **Bulk Insert / Bulk Update** คำสั่งเดียว ห้ามวนลูป `INSERT`/`UPDATE` ทีละแถว
+3. **ผลักงานคำนวณไปที่ DB & ระบุคอลัมน์:** ใช้ `SUM`/`COUNT`/`GROUP BY`/`EXISTS` ใน DB, ระบุเฉพาะคอลัมน์ที่ใช้ (ห้าม `SELECT *`)
+4. **Index-Friendly (SARGable):** ห้ามครอบฟังก์ชันบนคอลัมน์ใน `WHERE` และบังคับเพดาน `LIMIT` เสมอ
 
 ## 3. รายการตรวจของเดิม BE/FE
-### ฝั่ง BE:
-- **Key Naming & Response:** รูปแบบชื่อ key (`camelCase` vs `snake_case`), ชื่อ field วันที่/id/status, โครงสร้าง JSON สำเร็จ/ผิดพลาด (`error_code`, `message`)
-- **Layer & URL:** การแบ่งชั้น `route -> controller -> service -> repository`, คำนามพหูพจน์, versioning (`/api/v1/...`), `kebab-case`
-- **Query, Auth & Logging:** รูปแบบ pagination, filter, sort, schema validation, auth/RBAC middleware, HTTP status code, central error handling
-
-### ฝั่ง FE:
-- **API Client & Interceptors:** พาธไฟล์เชื่อม API (`api client`/`service`/`hooks`), `baseURL`, การแนบ token, การดักจับ error และ retry
-- **Cache, Key & Types:** การจัดการ loading/error/empty state, ระบบ cache, จุดแปลงชื่อ key, ตำแหน่งเก็บ `type`/`interface`
+- **BE:** Key naming (`camelCase`/`snake_case`), field วันที่/id/status, JSON response/error format, layer (`route->controller->service->repo`), URL (`/api/v1/kebab-case-plural`), pagination/filter/sort, schema validation, auth/RBAC middleware, central error logging
+- **FE:** ตำแหน่ง/รูปแบบ API client, `baseURL`/interceptor/token/retry, loading/error/empty state และ cache (`React Query`/`SWR`/Store), จุดแปลง key, ตำแหน่งเก็บ `type`/`interface`
 
 ## 4. หลักออกแบบใหม่เมื่อไม่มีของเดิม
-เมื่อโปรเจกต์ยังไม่มีรูปแบบในหัวข้อนั้น ให้ใช้หลักในหัวข้อที่ 2 (สำหรับ BE) ร่วมกับหลักต่อไปนี้ แล้วถาม 1 คำถามว่าจะบันทึกเข้า `.agents/docs/api-conventions.md` ไหม:
-- **ฝั่ง BE:** ใช้ชื่อ key และโครงสร้าง response/error มาตรฐานเดียวทั้งระบบ, บังคับเพดาน pagination (`maxLimit` หรือ cursor), validate input ที่ขอบระบบ, แยก layer ชัดเจน, ยึดกฎหัวข้อที่ 2 (Zero N+1 & Min Queries) อย่างเคร่งครัด
-- **ฝั่ง FE:** รวมการเรียก API ไว้ที่ client กลางที่เดียว, ใช้ interceptor จัดการ token/error, ใช้ caching/dedupe request, ทำ debounce ช่องค้นหา, ใช้ `AbortController` ยกเลิก request เก่า, จัดการ `loading`/`error`/`empty state` ครบ
+เมื่อหัวข้อนั้นไม่มีของเดิม ใช้หลักประสิทธิภาพข้อ 2 (BE) + หลักด้านล่าง แล้วถาม 1 คำถามว่าจะบันทึกเข้า `.agents/docs/api-conventions.md` ไหม:
+- **BE:** Key และ response/error มาตรฐานเดียว, pagination มีเพดาน (`maxLimit`/cursor), validate input ที่ขอบระบบ, แยก layer ชัดเจน
+- **FE:** รวม API ไว้ client กลางจุดเดียว, ใช้ interceptor จัดการ token/error, caching/dedupe request, debounce ค้นหา, `AbortController` ยกเลิก request เก่า, จัดการ `loading`/`error`/`empty state` ครบ

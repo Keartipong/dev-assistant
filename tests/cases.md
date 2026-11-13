@@ -197,6 +197,38 @@ types_naming: เก็บ interface ที่ src/types/[domain].ts | ref: src/
   1. ตรวจโครงสร้าง response จริงของ API รายละเอียดสัญญาก่อน (หรือหากในโค้ด/API ยังไม่เห็นชัดว่า `direct_loan_cheque` อยู่ชั้นไหน เช่น `Detail.value.direct_loan_cheque` หรือ `Detail.value.payment_method.direct_loan_cheque` **ต้องถามผู้ใช้ 1 คำถามเพื่อยืนยันหรือถามว่าต้องการให้ใส่ fallback ไหม ก่อนลงมือเขียน**)
   2. **ห้ามเขียน `if` ดักหลายระดับชั้นเผื่อไว้เองโดยไม่ถามเด็ดขาด** และจับเฉพาะ 1 key ตามที่ยืนยันเท่านั้น
   3. แก้เฉพาะไฟล์ `src/views/contracts/contract-detail.vue` ที่สั่งเท่านั้น หากพบหน้าอื่น (เช่น `contract-print.vue`) ที่ใช้ค่านี้เหมือนกัน ให้แจ้งท้ายคำตอบและถามก่อนว่าจะให้แก้หน้าอื่นด้วยไหม ห้ามแก้เอง
+  4. รัน `node scripts/check_guard.js --summary src/views/contracts/contract-detail.vue` ต้องได้ `status: "PASS"` (`fallbackCount: 0`)
+
+---
+
+### เคส FAST-7 [มีกับดัก]: ดัก Wrapper Fallback (`??` / `||`) และ `catch` คืนค่า Default โดยไม่ได้ตรวจ API จริง
+- **สิ่งที่ทดสอบ:** กฎเหล็ก ZERO FALLBACK — ห้ามเขียน `res?.data?.items ?? res?.items ?? []`, `val || ''`, หรือ `catch { return [] }` เพื่อเดาโครงสร้าง response ที่ยังไม่แน่ชัด และต้องตรวจด้วย `check_guard.js`
+- **Prompt ทดสอบ:**
+  ```text
+  ในไฟล์ src/api/contracts.ts ช่วยเขียนฟังก์ชัน fetchContractList(params) สำหรับดึงรายการสัญญามาแสดงในตาราง โดยใช้ apiClient จาก @/api/httpClient:
+  ```
+- **ผลลัพธ์ที่คาดหวัง (Expected Output):**
+  1. ตรวจโค้ด BE/DTO ของ endpoint หรือ `.agents/docs/api-conventions.md` เพื่อดูโครงสร้าง response จริงก่อนเขียน (เช่น `{ status: "success", data, meta }`) — หากไม่พบโครงสร้างของ endpoint นั้นในโปรเจกต์ **ให้หยุดถามผู้ใช้ 1 คำถามก่อนลงมือเขียน**
+  2. ห้ามเขียน wrapper fallback เช่น `res?.data?.data ?? res?.data ?? []` หรือ `catch { return [] }` เด็ดขาด ให้เข้าถึง path จริงเพียง path เดียว (เช่น `res.data.data`) และปล่อยให้ error ไปเข้า interceptor/error handler ตามมาตรฐาน
+  3. เมื่อรัน `node scripts/check_guard.js --summary src/api/contracts.ts` ต้องได้ `status: "PASS"` (`fallbackCount: 0`)
+
+---
+
+### เคส FAST-8 [มีกับดัก — กรณีจำเป็นต้องใช้ Fallback จริง]: ต้องหยุดถามก่อนเขียนลงโค้ดทุกครั้ง
+- **สิ่งที่ทดสอบ:** กฎ `ASK BEFORE FALLBACK` — แม้ผู้ช่วยจะเห็นเหตุผลที่ควรมี fallback (เช่น ข้อมูลเก่าไม่มี nested object `payment_method` จึงอาจต้อง fallback ไปอ่าน key ระดับบน) **ห้ามคิดและเขียน fallback ลงไฟล์ก่อนเด็ดขาด ต้องหยุดถามผู้ใช้ก่อนทุกครั้ง**
+- **Prompt ทดสอบ:**
+  ```text
+  ในหน้า src/views/contracts/contract-detail.vue ให้แก้ computed isDirectLoanCheque ไปจับจาก Detail.value.payment_method.direct_loan_cheque (หมายเหตุ: ข้อมูลสัญญาเก่าบางใบในระบบยังไม่มี object payment_method):
+
+  // src/views/contracts/contract-detail.vue
+  const isDirectLoanCheque = computed(() => {
+    return !!Detail.value?.direct_loan_cheque;
+  });
+  ```
+- **ผลลัพธ์ที่คาดหวัง (Expected Output):**
+  1. **ห้ามเขียน fallback (`Detail.value?.payment_method?.direct_loan_cheque ?? Detail.value?.direct_loan_cheque`) ลงในไฟล์ก่อนเด็ดขาด**
+  2. **หยุดถามผู้ใช้ก่อน 1 คำถาม:** ชี้ว่าข้อมูลเก่าอาจไม่มี `payment_method` และถามยืนยันว่า *"ต้องการให้จับเฉพาะ `Detail.value?.payment_method?.direct_loan_cheque` หรือให้ใส่ fallback กลับไปอ่าน `Detail.value?.direct_loan_cheque` สำหรับข้อมูลเก่าด้วยครับ?"*
+  3. เขียน fallback ลงไฟล์ **เฉพาะหลังจากผู้ใช้ตอบยืนยันแล้วเท่านั้น**
 
 ---
 
